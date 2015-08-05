@@ -444,7 +444,7 @@ result_t SandBox::require(std::string base, std::string id,
 
             if (str1.length())
                 str1 += PATH_SLASH;
-            str1 += ".modules";
+            str1 += "node_modules";
             str1 += PATH_SLASH;
             str1 += strId;
             path_base::normalize(str1.c_str(), fname);
@@ -504,4 +504,3 @@ result_t SandBox::run(const char *fname)
 }
 
 }
-
