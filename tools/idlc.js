@@ -8,6 +8,14 @@ var baseFolder = "../fibjs/include/ifs/";
 var defs = {};
 var parser = peg.generate(grammar);
 
+var tip = `/***************************************************************************
+ *                                                                         *
+ *   This file was automatically generated using idlc.js                   *
+ *   PLEASE DO NOT EDIT!!!!                                                *
+ *                                                                         *
+ ***************************************************************************/
+`;
+
 function gen_code(cls, def) {
     var typeMap = {
         "Integer": "int32_t",
@@ -376,13 +384,7 @@ function gen_code(cls, def) {
     };
 
     function gen_begin() {
-        txts.push(`/***************************************************************************
- *                                                                         *
- *   This file was automatically generated using idlc.js                   *
- *   PLEASE DO NOT EDIT!!!!                                                *
- *                                                                         *
- ***************************************************************************/
-`);
+        txts.push(tip);
 
         txts.push("#ifndef _" + cls + "_base_H_");
         txts.push("#define _" + cls + "_base_H_\n");
@@ -704,15 +706,15 @@ function gen_code(cls, def) {
         def.members = deflist;
     }
 
-    union_method();
+    // union_method();
 
-    build_refer();
+    // build_refer();
 
-    //---------------------------
+    // //---------------------------
 
-    gen_begin();
+    // gen_begin();
 
-    gen_refer_cls();
+    // gen_refer_cls();
 
     gen_cls();
 

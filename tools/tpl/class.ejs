@@ -1,0 +1,33 @@
+/***************************************************************************
+ *                                                                         *
+ *   This file was automatically generated using idlc.js                   *
+ *   PLEASE DO NOT EDIT!!!!                                                *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef _<%= cls  %>_base_H_
+#define _<%= cls  %>_base_H_
+
+/**
+ @author Leo Hoo <lion@9465.net>
+  */
+
+#include "../object.h"
+<% if (def.declare.extend !== 'object') { %>
+#include <%= def.declare.extend  %>.h
+<% } %>
+
+namespace fibjs
+{
+
+<% if (def.declare.extend !== 'object') { %>
+class <%= def.declare.extend  %>_base
+<% } %>
+
+<% refers.forEach(function(c){ %>
+class <%= c  %>_base
+<% }); %>
+
+class <%= cls  %>_base : public <%= def.declare.extend  %>_base
+{
+    DECLARE_CLASS(<%= cls  %>_base);
