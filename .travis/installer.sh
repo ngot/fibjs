@@ -31,7 +31,7 @@ if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
             CUSTOM_INSTALL=""
             ;;
         i386)
-            sudo apt-get install g++-multilib -y
+            sudo apt-get install gcc-5-multilib g++-5-multilib -y
             sudo rm -f /usr/include/asm
             sudo ln -s x86_64-linux-gnu /usr/include/i386-linux-gnu
             sudo ln -s x86_64-linux-gnu /usr/include/x86_64-linux-gnux32
