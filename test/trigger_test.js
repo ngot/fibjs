@@ -152,4 +152,4 @@ describe("Trigger/EventEmitter", () => {
     evevt_test("events.EventEmitter.call", new MyEmitter2());
 });
 
-// test.run(console.DEBUG);
+test.run(console.DEBUG);

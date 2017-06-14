@@ -1,12 +1,27 @@
 // Place your settings in this file to overwrite the default settings
 {
-    "editor.formatOnSave": true,
-
+    "editor.formatOnSave": false,
     "files.associations": {
         "*.idl": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "atomic": "cpp",
+        "functional": "cpp",
+        "locale": "cpp",
+        "memory": "cpp",
+        "system_error": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "__locale": "cpp",
+        "sstream": "cpp",
+        "typeinfo": "cpp",
+        "__functional_03": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "__tree": "cpp",
+        "map": "cpp"
     },
-
     "C_Cpp.clang_format_sortIncludes": false,
     "C_Cpp.clang_format_fallbackStyle": "WebKit"
 }

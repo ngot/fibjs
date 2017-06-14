@@ -292,7 +292,7 @@ constToken      = "const"
 newToken        = "new"
 `;
 
-var baseFolder = "../fibjs/include/ifs/";
+var baseFolder = path.join(__dirname, "../fibjs/include/ifs/");
 var defs = {};
 var parser = peg.generate(grammar);
 
@@ -575,12 +575,12 @@ function gen_code(cls, def) {
             }
         },
         "object": {
-            "declare": () => {},
-            "stub": () => {},
-            "stub_func": () => {}
+            "declare": () => { },
+            "stub": () => { },
+            "stub_func": () => { }
         },
         "const": {
-            "declare": () => {},
+            "declare": () => { },
             "stub": fn => {
                 var fname = fn.name;
                 txts.push("    static void s_get_" + fname + "(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& args);");
@@ -1016,17 +1016,16 @@ function gen_code(cls, def) {
     txt = txt.replace(/};\n\n}/g, '};\n}');
     txt = txt.replace(/}\n\n}/g, '}\n}');
 
-    var fname = baseFolder + cls + ".h";
+    var fname = path.join(baseFolder, cls + ".h");
 
     if (!fs.exists(fname) || txt !== fs.readTextFile(fname)) {
-        console.log(cls + ".h");
         fs.writeTextFile(fname, txt);
     }
 }
 
 fs.readdir(baseFolder).forEach(f => {
     if (path.extname(f) == '.idl') {
-        var def = parser.parse(fs.readTextFile(baseFolder + f));
+        var def = parser.parse(fs.readTextFile(path.join(baseFolder, f)));
         defs[def.declare.name] = def;
     }
 });
@@ -1037,8 +1036,8 @@ for (var cls in defs) {
 
 function clean_folder(path) {
     var dir = fs.readdir(path);
-    dir.forEach(function (name) {
-        var fname = path + '/' + name;
+    dir.forEach(function(name) {
+        var fname = path.join(path, name);
         var f = fs.stat(fname);
         if (f.isDirectory()) {
             clean_folder(fname);
@@ -1047,33 +1046,3 @@ function clean_folder(path) {
             fs.unlink(fname);
     });
 }
-
-process.chdir("../fibjs/include/ifs");
-clean_folder("../../../docs/html");
-process.run('doxygen');
-
-process.chdir("../../../docs/src");
-process.run('doxygen');
-
-function replace_dot(path) {
-    var dir = fs.readdir(path);
-    dir.forEach(function (name) {
-        var fname = path + '/' + name;
-        var f = fs.stat(fname);
-        if (f.isDirectory()) {
-            replace_dot(fname);
-
-        } else if (name.substr(name.length - 5) == ".html") {
-            var html = fs.readTextFile(fname);
-            html = html.replace(/::/g, ".");
-            html = html.replace(/<meta\ name=\"generator\"\ content=\"Doxygen\ [0-9\.]+"\/>/g, "");
-            html = html.replace(/<!--\ 制作者\ Doxygen\ [0-9\.]+\ -->/g, "");
-            html = html.replace(/<!--\ Generated\ by\ Doxygen\ [0-9\.]+\ -->/g, "");
-
-            fs.writeFile(fname, html);
-        }
-    });
-}
-
-process.chdir("../html");
-replace_dot(".");

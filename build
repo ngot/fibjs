@@ -176,16 +176,16 @@ fi
 export BUILD_JOBS
 export BUILD_VERBOSE
 
-if [ -d vender ]; then 
-	cd vender
-	sh build $BUILD_TYPE $TARGET_ARCH
-	if [ $? != 0 ]; then
-		exit 1
-	fi
-	cd ..
-else
-	inform
-fi
+# if [ -d vender ]; then 
+# 	cd vender
+# 	sh build $BUILD_TYPE $TARGET_ARCH
+# 	if [ $? != 0 ]; then
+# 		exit 1
+# 	fi
+# 	cd ..
+# else
+# 	inform
+# fi
 
 cd fibjs
 sh build $BUILD_TYPE $TARGET_ARCH $CI
