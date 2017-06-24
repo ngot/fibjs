@@ -1,9 +1,10 @@
 var test = require("test");
 var coroutine = require('coroutine');
 var path = require('path');
-test.setup();
-
+var util = require('util');
 var fs = require('fs');
+
+test.setup();
 
 var vmid = coroutine.vmid;
 var isWin32 = process.platform === 'win32';
@@ -11,7 +12,7 @@ var isWin32 = process.platform === 'win32';
 function unlink(pathname) {
     try {
         fs.rmdir(pathname);
-    } catch (e) {}
+    } catch (e) { }
 }
 
 var pathname = 'test_dir' + vmid;
@@ -311,6 +312,44 @@ describe('fs', () => {
         f1.close();
 
         fs.unlink(__dirname + '/fs_test.js.bak' + vmid);
+    });
+
+    describe('read', () => {
+        var fd;
+
+        before(() => {
+            fd = fs.open(path.join(__dirname, 'fs_test.js'))
+            console.log('before');
+        });
+
+        after(() => {
+            fs.close(fd)
+            console.log('after');
+        });
+
+        it('sync', () => {
+            const buf = new Buffer();
+            const bytes = fs.read(fd, buf, 0, 0, 0);
+            assert.equal(bytes, 0);
+            assert.deepEqual(buf, new Buffer());
+        });
+
+        it('callback', util.sync(done => {
+            const buf = new Buffer();
+            fs.read(fd, buf, 0, 0, 0, (err, bytes) => {
+                assert.isUndefined(err);
+                assert.equal(bytes, 0);
+                assert.deepEqual(buf1, new Buffer());
+                done();
+            });
+        }));
+
+        it('Sync', () => {
+            const buf = new Buffer();
+            const bytes = fs.readSync(fd, buf, 0, 0, 0);
+            assert.equal(bytes, 0);
+            assert.deepEqual(buf, new Buffer());
+        });
     });
 
     it("readdir", () => {
