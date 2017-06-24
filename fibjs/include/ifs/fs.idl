@@ -224,6 +224,12 @@ module fs
      */
     static truncate(String path, Integer len) async;
 
+    /*! @brief 修改文件尺寸,如果指定的长度大于源文件大小则用'\0'填充，否则多于的文件内容将丢失
+     @param path 指定被修改文件的路径
+     @param len 指定修改后文件的大小
+     */
+    static read(Integer fd, Buffer buffer, Integer offset = 0, Integer length = -1, Integer position = 0) async;
+
     /*! @brief 修改文件尺寸,如果指定的长度大于源文件大小则用'\0'填充，否则多于的文件内容将丢失，是 truncate 的同步版兼容接口
      @param path 指定被修改文件的路径
      @param len 指定修改后文件的大小
