@@ -140,6 +140,14 @@ describe('Buffer', () => {
         var buf = new Buffer("100");
         assert.equal(buf.length, 3);
         assert.equal(buf.toString(), "100");
+
+        assert.strictEqual('TWFu', (Buffer.from('Man')).toString('base64'));
+
+        const expected = [0xff, 0xff, 0xbe, 0xff, 0xef, 0xbf, 0xfb, 0xef, 0xff];
+        assert.deepEqual(Buffer.from('//++/++/++//', 'base64'),
+            Buffer.from(expected));
+        assert.deepEqual(Buffer.from('__--_--_--__', 'base64'),
+            Buffer.from(expected));
     });
 
     it('Buffer.from(Array)', () => {
@@ -375,8 +383,8 @@ describe('Buffer', () => {
         assert.equal(buf.toString("base64"), "MTIzNA==");
         assert.equal(buf.toString("utf8", 1), "234");
         assert.equal(buf.toString("utf8", 1, 3), "23");
-        assert.equal(buf.toString("hex", 2), "323334");
-        assert.equal(buf.toString("base64", 2), "IzNA==");
+        assert.equal(buf.toString("hex", 2), "3334");
+        assert.equal(buf.toString("base64", 2), "MzQ=");
 
         buf = new Buffer(5)
         buf.append("abcd");
@@ -387,6 +395,10 @@ describe('Buffer', () => {
         assert.equal(buf1.toString('ascii'), 'this is a tC)st');
 
         assert.equal(buf1.toString('ucs2'), '桴獩椠⁳⁡썴玩');
+
+        ['base64'].forEach((encoding) => {
+            assert.strictEqual(Buffer.from('Zm9v', encoding).toString(encoding), 'Zm9v');
+        });
     });
 
     it('append', () => {
@@ -794,37 +806,37 @@ describe('Buffer', () => {
     });
 
     var fixtures = [{
-            "a": "ffff00",
-            "expected": "00ffff"
-        },
-        {
-            "a": "ffff",
-            "expected": "ffff"
-        },
-        {
-            "a": "0000",
-            "expected": "0000"
-        },
-        {
-            "a": "0000ff",
-            "expected": "ff0000"
-        },
-        {
-            "a": "000000",
-            "expected": "000000"
-        },
-        {
-            "a": "ffffff",
-            "expected": "ffffff"
-        },
-        {
-            "a": "00ffff00ff",
-            "expected": "ff00ffff00"
-        },
-        {
-            "a": "0000ff00ffff00ff",
-            "expected": "ff00ffff00ff0000"
-        }
+        "a": "ffff00",
+        "expected": "00ffff"
+    },
+    {
+        "a": "ffff",
+        "expected": "ffff"
+    },
+    {
+        "a": "0000",
+        "expected": "0000"
+    },
+    {
+        "a": "0000ff",
+        "expected": "ff0000"
+    },
+    {
+        "a": "000000",
+        "expected": "000000"
+    },
+    {
+        "a": "ffffff",
+        "expected": "ffffff"
+    },
+    {
+        "a": "00ffff00ff",
+        "expected": "ff00ffff00"
+    },
+    {
+        "a": "0000ff00ffff00ff",
+        "expected": "ff00ffff00ff0000"
+    }
     ];
 
     it('reverse', () => {
