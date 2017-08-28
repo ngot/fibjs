@@ -399,6 +399,10 @@ describe('Buffer', () => {
         ['base64'].forEach((encoding) => {
             assert.strictEqual(Buffer.from('Zm9v', encoding).toString(encoding), 'Zm9v');
         });
+
+        assert.strictEqual(Buffer.from([0x41]).toString('utf8', -1), 'A');
+        assert.strictEqual(Buffer.from([0x41]).toString('utf8', 1), '');
+        assert.strictEqual(Buffer.from([0x41]).toString('utf8', 2), '');
     });
 
     it('append', () => {

@@ -1044,8 +1044,17 @@ result_t Buffer::toString(exlib::string codec, int32_t offset, exlib::string& re
     if (offset < 0)
         offset = 0;
 
-    str.append(m_data.c_str() + offset, length - offset);
-    return commonEncode(codec, str, retVal);
+    if (offset >= length){
+        retVal = "";
+        return 0;
+    }
+
+    if (offset > 0) {
+        str.append(m_data.c_str() + offset, length - offset);
+        return commonEncode(codec, str, retVal);
+    }else{
+        return commonEncode(codec, m_data, retVal);
+    }
 }
 
 result_t Buffer::toString(exlib::string codec, int32_t offset, int32_t end, exlib::string& retVal)

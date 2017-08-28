@@ -6,35 +6,35 @@ const StringDecoder = require('string_decoder').StringDecoder;
 let decoder = new StringDecoder();
 assert.strictEqual(decoder.encoding, 'utf8');
 
-// UTF-8
+// // UTF-8
 // test('utf-8', Buffer.from('$', 'utf-8'), '$');
 // test('utf-8', Buffer.from('¢', 'utf-8'), '¢');
 // test('utf-8', Buffer.from('€', 'utf-8'), '€');
 // test('utf-8', Buffer.from('𤭢', 'utf-8'), '𤭢');
-// A mixed ascii and non-ascii string
-// Test stolen from deps/v8/test/cctest/test-strings.cc
-// U+02E4 -> CB A4
-// U+0064 -> 64
-// U+12E4 -> E1 8B A4
-// U+0030 -> 30
-// U+3045 -> E3 81 85
+// // A mixed ascii and non-ascii string
+// // Test stolen from deps/v8/test/cctest/test-strings.cc
+// // U+02E4 -> CB A4
+// // U+0064 -> 64
+// // U+12E4 -> E1 8B A4
+// // U+0030 -> 30
+// // U+3045 -> E3 81 85
 // test(
 //   'utf-8',
 //   Buffer.from([0xCB, 0xA4, 0x64, 0xE1, 0x8B, 0xA4, 0x30, 0xE3, 0x81, 0x85]),
 //   '\u02e4\u0064\u12e4\u0030\u3045'
 // );
 
-// Some invalid input, known to have caused trouble with chunking
-// in https://github.com/nodejs/node/pull/7310#issuecomment-226445923
-// 00: |00000000 ASCII
-// 41: |01000001 ASCII
-// B8: 10|111000 continuation
-// CC: 110|01100 two-byte head
-// E2: 1110|0010 three-byte head
-// F0: 11110|000 four-byte head
-// F1: 11110|001'another four-byte head
-// FB: 111110|11 "five-byte head", not UTF-8
-test('utf-8', Buffer.from('C9B5A941', 'hex'), '\u0275\ufffdA');
+// // Some invalid input, known to have caused trouble with chunking
+// // in https://github.com/nodejs/node/pull/7310#issuecomment-226445923
+// // 00: |00000000 ASCII
+// // 41: |01000001 ASCII
+// // B8: 10|111000 continuation
+// // CC: 110|01100 two-byte head
+// // E2: 1110|0010 three-byte head
+// // F0: 11110|000 four-byte head
+// // F1: 11110|001'another four-byte head
+// // FB: 111110|11 "five-byte head", not UTF-8
+// test('utf-8', Buffer.from('C9B5A941', 'hex'), '\u0275\ufffdA');
 // test('utf-8', Buffer.from('E2', 'hex'), '\ufffd');
 // test('utf-8', Buffer.from('E241', 'hex'), '\ufffdA');
 // test('utf-8', Buffer.from('CCCCB8', 'hex'), '\ufffd\u0338');
@@ -45,8 +45,8 @@ test('utf-8', Buffer.from('C9B5A941', 'hex'), '\u0275\ufffdA');
 // test('utf-8', Buffer.from('E2B8CCB8', 'hex'), '\ufffd\u0338');
 // test('utf-8', Buffer.from('E2FBCC01', 'hex'), '\ufffd\ufffd\ufffd\u0001');
 // test('utf-8', Buffer.from('CCB8CDB9', 'hex'), '\u0338\u0379');
-// // CESU-8 of U+1D40D
-// test('utf-8', Buffer.from('EDA0B5EDB08D', 'hex'), '\ufffd\ufffd');
+// CESU-8 of U+1D40D
+// test('utf-8', Buffer.from('EDA0B5EDB08D', 'hex'), '\ufffd\ufffd'); // todo
 
 // // UCS-2
 // test('ucs2', Buffer.from('ababc', 'ucs2'), 'ababc', [
@@ -60,7 +60,7 @@ test('utf-8', Buffer.from('C9B5A941', 'hex'), '\u0275\ufffdA');
 //   ]
 // ]);
 
-// UTF-16LE
+// // UTF-16LE
 // test('utf16le', Buffer.from('3DD84DDC', 'hex'), '\ud83d\udc4d',
 //   [[0, 3], [3, 4]]); // thumbs up
 
@@ -95,29 +95,29 @@ test('utf-8', Buffer.from('C9B5A941', 'hex'), '\u0275\ufffdA');
 // decoder = new StringDecoder('utf8');
 // assert.strictEqual(decoder.text(Buffer.from([0x41]), 2), '');
 
-// // // Additional UTF-16LE surrogate pair tests
-// // decoder = new StringDecoder('utf16le');
-// // assert.strictEqual(decoder.write(Buffer.from('3DD8', 'hex')), '');
-// // assert.strictEqual(decoder.write(Buffer.from('4D', 'hex')), '');
-// // assert.strictEqual(decoder.write(Buffer.from('DC', 'hex')), '\ud83d\udc4d');
-// // assert.strictEqual(decoder.end(), '');
+// // Additional UTF-16LE surrogate pair tests
+decoder = new StringDecoder('utf16le');
+assert.strictEqual(decoder.write(Buffer.from('3DD8', 'hex')), '');
+assert.strictEqual(decoder.write(Buffer.from('4D', 'hex')), '');
+assert.strictEqual(decoder.write(Buffer.from('DC', 'hex')), '\ud83d\udc4d');
+assert.strictEqual(decoder.end(), '');
 
-// // decoder = new StringDecoder('utf16le');
-// // assert.strictEqual(decoder.write(Buffer.from('3DD8', 'hex')), '');
-// // assert.strictEqual(decoder.end(), '\ud83d');
+// decoder = new StringDecoder('utf16le');
+// assert.strictEqual(decoder.write(Buffer.from('3DD8', 'hex')), '');
+// assert.strictEqual(decoder.end(), '\ud83d');
 
-// // decoder = new StringDecoder('utf16le');
-// // assert.strictEqual(decoder.write(Buffer.from('3DD8', 'hex')), '');
-// // assert.strictEqual(decoder.write(Buffer.from('4D', 'hex')), '');
-// // assert.strictEqual(decoder.end(), '\ud83d');
+// decoder = new StringDecoder('utf16le');
+// assert.strictEqual(decoder.write(Buffer.from('3DD8', 'hex')), '');
+// assert.strictEqual(decoder.write(Buffer.from('4D', 'hex')), '');
+// assert.strictEqual(decoder.end(), '\ud83d');
 
-// assert.throws(() => {
-//   new StringDecoder(1);
-// }, /^Error: Unknown encoding: 1$/);
+assert.throws(() => {
+  new StringDecoder(1);
+}, /^Error: Unknown encoding: 1$/);
 
-// assert.throws(() => {
-//   new StringDecoder('test');
-// }, /^Error: Unknown encoding: test$/);
+assert.throws(() => {
+  new StringDecoder('test');
+}, /^Error: Unknown encoding: test$/);
 
 // test verifies that StringDecoder will correctly decode the given input
 // buffer with the given encoding to the expected output. It will attempt all
@@ -198,20 +198,14 @@ function writeSequences(length, start, sequence) {
 
 // ########################################################################
 
-// // const encodings = ['base64', 'hex', 'utf8', 'utf16le', 'ucs2'];
-
-// // const encodings = ['base64', 'hex', 'utf8'];
-// const encodings = ['base64'];
-
-// // const bufs = ['☃💩', 'asdf'].map((b) => Buffer.from(b));
-// // const bufs = ['asdf'].map((b) => Buffer.from(b));
-// // const bufs = ['a'].map((b) => Buffer.from(b));
+// const encodings = ['base64', 'hex', 'utf8', 'utf16le', 'ucs2'];
+// const bufs = ['☃💩', 'asdf'].map((b) => Buffer.from(b));
 
 // // also test just arbitrary bytes from 0-15.
-// // for (let i = 1; i <= 16; i++) {
-// //   const bytes = '.'.repeat(i - 1).split('.').map((_, j) => j + 0x78);
-// //   bufs.push(Buffer.from(bytes));
-// // }
+// for (let i = 1; i <= 16; i++) {
+//   const bytes = '.'.repeat(i - 1).split('.').map((_, j) => j + 0x78);
+//   bufs.push(Buffer.from(bytes));
+// }
 
 // encodings.forEach(testEncoding);
 
@@ -240,11 +234,6 @@ function writeSequences(length, start, sequence) {
 
 //   // .toString() on the buffer
 //   const res3 = buf.toString(encoding);
-
-//   console.log('res1:', res1);
-//   console.log('res2:', res2);
-//   console.log('res3:', res3);
-
 //   assert.strictEqual(res1, res3, 'one byte at a time should match toString');
 //   assert.strictEqual(res2, res3, 'all bytes at once should match toString');
 // }

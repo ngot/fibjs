@@ -134,8 +134,16 @@ result_t StringDecoder::utf16Text(Buffer_base* buf, int32_t i, exlib::string& re
 
     if ((bufLen - i) % 2 == 0) {
         buf->toString("utf16le", i, r);
-        if (r.length() > 0) {
-            int32_t c = r[r.length() - 1];
+        exlib::string nr = r;
+        exlib::wchar ret;
+
+        int32_t n = utf_convert(nr.c_str(), (int32_t)nr.length(), (exlib::wchar*)NULL, 0);
+        ret.resize(n * sizeof(exlib::wchar));
+        utf_convert(nr.c_str(), (int32_t)nr.length(), &ret[0], n);
+
+        int32_t len = ret.length();
+        if (len > 0) {
+            int32_t c = ret[ret.length() - 1];
             if (c >= 0xD800 && c <= 0xDBFF) {
                 m_lastNeed = 2;
                 m_lastTotal = 4;
@@ -146,7 +154,10 @@ result_t StringDecoder::utf16Text(Buffer_base* buf, int32_t i, exlib::string& re
                 buf->_indexed_getter(bufLen - 1, b);
                 m_lastChar->_indexed_setter(1, b);
 
-                r.resize(r.length() - 1);
+                ret.resize(ret.length() - 1);
+
+                r = utf16to8String((const exlib::wchar*)ret.c_str(), (int32_t)ret.length() / sizeof(exlib::wchar));
+
                 retVal = r;
                 return 0;
             }
@@ -288,10 +299,6 @@ result_t StringDecoder::utf8Text(Buffer_base* buf, int32_t i, exlib::string& ret
 
 result_t StringDecoder::base64End1(exlib::string& retVal)
 {
-    // const r = (buf && buf.length ? this.write(buf) : '');
-    // if (this.lastNeed)
-    //   return r + this.lastChar.toString('base64', 0, 3 - this.lastNeed);
-    // return r;
     if (m_lastNeed != 0)
         m_lastChar->toString("base64", 0, 3 - m_lastNeed, retVal);
     else
