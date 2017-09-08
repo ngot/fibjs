@@ -28,6 +28,7 @@ public:
         Runtime* rt = Runtime::current();
 
         rt->m_code = hr;
+        rt->m_error = "";
         return rt->m_code;
     }
 
@@ -36,6 +37,15 @@ public:
         Runtime* rt = Runtime::current();
 
         rt->m_code = CALL_E_EXCEPTION;
+        rt->m_error = err;
+        return rt->m_code;
+    }
+
+    static result_t setError(result_t hr, exlib::string err)
+    {
+        Runtime* rt = Runtime::current();
+
+        rt->m_code = hr;
         rt->m_error = err;
         return rt->m_code;
     }

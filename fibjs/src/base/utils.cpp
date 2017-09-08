@@ -74,7 +74,12 @@ exlib::string getResultMessage(result_t hr)
         "Permission denied"
     };
 
-    if (hr == CALL_E_EXCEPTION) {
+    if (hr == CALL_E_EXCEPTION
+        || hr == CALL_E_TYPE_ERROR
+        || hr == CALL_E_SYNTAX_ERROR
+        || hr == CALL_E_REFERENCE_ERROR
+        || hr == CALL_E_RANGE_ERROR
+        || hr == CALL_E_TYPEMISMATCH) {
         exlib::string s = Runtime::errMessage();
 
         if (s.length() > 0)
@@ -107,12 +112,29 @@ exlib::string getResultMessage(result_t hr)
 
 v8::Local<v8::Value> ThrowResult(result_t hr)
 {
-    Isolate* isolate = Isolate::current();
-    v8::Local<v8::Value> e = v8::Exception::Error(
-        isolate->NewString(getResultMessage(hr)));
-    e->ToObject()->Set(isolate->NewString("number"), v8::Int32::New(isolate->m_isolate, -hr));
+    // exlib::string errMessage = Runtime::errMessage();
 
-    return isolate->m_isolate->ThrowException(e);
+    switch (hr) {
+    case CALL_E_TYPE_ERROR:
+    case CALL_E_TYPEMISMATCH:
+        if (errMessage.length() == 0) {
+            errMessage = "The argument could not be coerced to the specified type.";
+        }
+        return ThrowTypeError(errMessage);
+    case CALL_E_SYNTAX_ERROR:
+        return ThrowSyntaxError(errMessage);
+    case CALL_E_REFERENCE_ERROR:
+        return ThrowReferenceError(errMessage);
+    case CALL_E_RANGE_ERROR:
+        return ThrowRangeError(errMessage);
+    default:
+        Isolate* isolate = Isolate::current();
+        v8::Local<v8::Value> e = v8::Exception::Error(
+            isolate->NewString(getResultMessage(hr)));
+        e->ToObject()->Set(isolate->NewString("number"),
+            v8::Int32::New(isolate->m_isolate, -hr));
+        return ThrowError(e);
+    }
 }
 
 inline const char* ToCString(const v8::String::Utf8Value& value)

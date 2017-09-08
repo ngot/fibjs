@@ -12,6 +12,7 @@
 #include "ifs/global.h"
 #include "Fiber.h"
 #include "File.h"
+#include "utils.h"
 #include "BufferedStream.h"
 #include "SubProcess.h"
 #include <vector>
@@ -122,7 +123,7 @@ result_t process_base::umask(exlib::string mask, int32_t& retVal)
         char c = mask[i];
 
         if (c > '7' || c < '0')
-            return CHECK_ERROR(Runtime::setError("invalid octal string"));
+            return CHECK_ERROR(Runtime::setError(CALL_E_TYPE_ERROR, "invalid octal string"));
 
         oct *= 8;
         oct += c - '0';

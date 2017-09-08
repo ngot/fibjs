@@ -167,6 +167,14 @@ typedef int32_t result_t;
 #define CALL_E_JAVASCRIPT (CALL_E_MAX - 23)
 // Permission denied
 #define CALL_E_PERMIT (CALL_E_MAX - 24)
+// TypeError
+#define CALL_E_TYPE_ERROR (CALL_E_MAX - 25)
+// SyntaxError
+#define CALL_E_SYNTAX_ERROR (CALL_E_MAX - 26)
+// ReferenceError
+#define CALL_E_REFERENCE_ERROR (CALL_E_MAX - 27)
+// RangeError
+#define CALL_E_RANGE_ERROR (CALL_E_MAX - 28)
 
 #define CALL_E_MIN -100100
 
@@ -1014,12 +1022,51 @@ inline v8::Local<v8::Value> ThrowRangeError(const char* msg)
         isolate->NewString(msg)));
 }
 
+inline v8::Local<v8::Value> ThrowReferenceError(const char* msg)
+{
+    Isolate* isolate = Isolate::current();
+
+    return isolate->m_isolate->ThrowException(v8::Exception::ReferenceError(
+        isolate->NewString(msg)));
+}
+
+inline v8::Local<v8::Value> ThrowSyntaxError(const char* msg)
+{
+    Isolate* isolate = Isolate::current();
+
+    return isolate->m_isolate->ThrowException(v8::Exception::SyntaxError(
+        isolate->NewString(msg)));
+}
+
 inline v8::Local<v8::Value> ThrowError(exlib::string msg)
 {
     Isolate* isolate = Isolate::current();
 
     return isolate->m_isolate->ThrowException(v8::Exception::Error(
         isolate->NewString(msg)));
+}
+
+inline v8::Local<v8::Value> ThrowError(result_t hr, exlib::string msg)
+{
+    Isolate* isolate = Isolate::current();
+    v8::Local<v8::Value> exception = v8::Exception::Error(
+        isolate->NewString(msg));
+    exception->ToObject()->Set(isolate->NewString("number"),
+        v8::Int32::New(isolate->m_isolate, -hr));
+
+    return isolate->m_isolate->ThrowException(exception);
+}
+
+template <class T>
+inline v8::Local<v8::Value> ThrowError(result_t hr, exlib::string msg)
+{
+    Isolate* isolate = Isolate::current();
+    v8::Local<v8::Value> exception = v8::Exception::Error(
+        isolate->NewString(msg));
+    exception->ToObject()->Set(isolate->NewString("number"),
+        v8::Int32::New(isolate->m_isolate, -hr));
+
+    return isolate->m_isolate->ThrowException(exception);
 }
 
 inline v8::Local<v8::Value> ThrowTypeError(exlib::string msg)
@@ -1035,6 +1082,22 @@ inline v8::Local<v8::Value> ThrowRangeError(exlib::string msg)
     Isolate* isolate = Isolate::current();
 
     return isolate->m_isolate->ThrowException(v8::Exception::RangeError(
+        isolate->NewString(msg)));
+}
+
+inline v8::Local<v8::Value> ThrowReferenceError(exlib::string msg)
+{
+    Isolate* isolate = Isolate::current();
+
+    return isolate->m_isolate->ThrowException(v8::Exception::ReferenceError(
+        isolate->NewString(msg)));
+}
+
+inline v8::Local<v8::Value> ThrowSyntaxError(exlib::string msg)
+{
+    Isolate* isolate = Isolate::current();
+
+    return isolate->m_isolate->ThrowException(v8::Exception::SyntaxError(
         isolate->NewString(msg)));
 }
 
