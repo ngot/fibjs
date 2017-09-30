@@ -1,11 +1,36 @@
 // Place your settings in this file to overwrite the default settings
 {
-    "editor.formatOnSave": true,
-
+    "editor.formatOnSave": 0,
     "files.associations": {
-        "*.idl": "java"
+        "*.idl": "java",
+        "string": "cpp",
+        "array": "cpp",
+        "iterator": "cpp",
+        "vector": "cpp",
+        "cstddef": "cpp",
+        "__locale": "cpp",
+        "sstream": "cpp",
+        "ios": "cpp",
+        "__functional_03": "cpp",
+        "deque": "cpp",
+        "forward_list": "cpp",
+        "functional": "cpp",
+        "list": "cpp",
+        "system_error": "cpp",
+        "__config": "cpp",
+        "exception": "cpp",
+        "initializer_list": "cpp",
+        "new": "cpp",
+        "stdexcept": "cpp",
+        "typeinfo": "cpp",
+        "*.tcc": "cpp",
+        "cmath": "cpp",
+        "cstdlib": "cpp",
+        "cctype": "cpp",
+        "cstdio": "cpp",
+        "cwchar": "cpp",
+        "cwctype": "cpp"
     },
-
     "C_Cpp.clang_format_sortIncludes": false,
     "C_Cpp.clang_format_fallbackStyle": "WebKit"
 }
