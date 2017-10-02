@@ -4,6 +4,7 @@
 #include "encoding.h"
 #include "Int64.h"
 #include "utf8.h"
+#include "StringDecoder.h"
 #include <cstring>
 #include <string>
 #include <iostream>
@@ -517,26 +518,50 @@ result_t Buffer::indexOf(int32_t value, v8::Local<v8::Value> offset, exlib::stri
     return 0;
 }
 
-result_t Buffer::indexOf(Buffer_base* value, v8::Local<v8::Value> offset, exlib::string encoding, int32_t& retVal)
+result_t Buffer::indexOf(Buffer_base* value, v8::Local<v8::Value> offset, 
+    exlib::string encoding, int32_t& retVal)
 {
     int32_t buf_length = (int32_t)m_data.length();
     int32_t buf_offset = 0;
 
-    double num;
-    result_t hr = GetArgumentValue(offset, num, false);
-    if (hr < 0) {
-        buf_offset = 0;
-    } else if (num > 2147483647ll) {
-        buf_offset = 2147483647ll;
-    } else if (num < -2147483648ll) {
-        buf_offset = -2147483648ll;
+    if (offset->IsString() || offset->IsStringObject()) {
+        GetArgumentValue(offset, encoding);
+        std::cout << "encoding buffer:" << encoding.c_str() << std::endl;
     } else {
-        buf_offset = (int32_t)num;
+        double num;
+        result_t hr = GetArgumentValue(offset, num, false);
+        if (hr < 0) {
+            buf_offset = 0;
+        } else if (num > 2147483647ll) {
+            buf_offset = 2147483647ll;
+        } else if (num < -2147483648ll) {
+            buf_offset = -2147483648ll;
+        } else {
+            buf_offset = (int32_t)num;
+        }
+    }
+
+    encoding = normalizeEncoding(encoding);
+    bool isValid = false;
+    Buffer_base::isEncoding(encoding, isValid);
+    if (!isValid) {
+        return CHECK_ERROR(Runtime::setError("Unknown encoding: " + encoding));
+    }
+
+    if(encoding == "utf16le"){
+        int32_t len = 0;
+        value->get_length(len);
+        if (len < 2 || buf_length < 2) {
+            retVal = -1;
+            return 0;
+        }
     }
 
     obj_ptr<Buffer> v_data = dynamic_cast<Buffer*>(value);
     exlib::string vstr;
     v_data->toString(vstr);
+
+    std::cout << "vstr buffer:" << vstr.c_str() << std::endl;
 
     if (vstr.length() == 0) {
         std::cout << "value.length():" << vstr.length() << " buf_offset:" << buf_offset << " buf_length:" << buf_length << std::endl;
@@ -561,27 +586,47 @@ result_t Buffer::indexOf(Buffer_base* value, v8::Local<v8::Value> offset, exlib:
     return 0;
 }
 
-result_t Buffer::indexOf(exlib::string value, v8::Local<v8::Value> offset, exlib::string encoding, int32_t& retVal)
+result_t Buffer::indexOf(exlib::string value, v8::Local<v8::Value> offset, 
+    exlib::string encoding, int32_t& retVal)
 {
+    std::cout << "string..." << std::endl;
     int32_t buf_length = (int32_t)m_data.length();
     int32_t buf_offset = 0;
 
-    double num;
-    result_t hr = GetArgumentValue(offset, num, false);
-    if (hr < 0) {
-        buf_offset = 0;
-    } else if (num > 2147483647ll) {
-        buf_offset = 2147483647ll;
-    } else if (num < -2147483648ll) {
-        buf_offset = -2147483648ll;
+    if (offset->IsString() || offset->IsStringObject()) {
+        GetArgumentValue(offset, encoding);
+        std::cout << "encoding:" << encoding.c_str() << std::endl;
     } else {
-        buf_offset = (int32_t)num;
+        double num;
+        result_t hr = GetArgumentValue(offset, num, false);
+        if (hr < 0) {
+            buf_offset = 0;
+        } else if (num > 2147483647ll) {
+            buf_offset = 2147483647ll;
+        } else if (num < -2147483648ll) {
+            buf_offset = -2147483648ll;
+        } else {
+            buf_offset = (int32_t)num;
+        }
+    }
+
+    encoding = normalizeEncoding(encoding);
+    bool isValid = false;
+    Buffer_base::isEncoding(encoding, isValid);
+    if (!isValid) {
+        return CHECK_ERROR(Runtime::setError("Unknown encoding: " + encoding));
     }
 
     if (value.length() == 0) {
         std::cout << "value.length():" << value.length() << " buf_offset:" << buf_offset << " buf_length:" << buf_length << std::endl;
         retVal = buf_offset < buf_length ? buf_offset : buf_length;
         return 0;
+    }else if(encoding != "utf8"){
+        obj_ptr<Buffer> buf = new Buffer();
+        result_t hr = buf->append(value, encoding);
+        if (hr < 0) return hr;
+        buf->toString(value);
+        std::cout << "value 1111:" << value.c_str() << std::endl;
     }
 
     if (buf_offset >= buf_length) {
